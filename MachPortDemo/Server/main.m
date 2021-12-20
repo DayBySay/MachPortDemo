@@ -1,16 +1,17 @@
 //
 //  main.m
-//  MachPortDemo
+//  Server
 //
 //  Created by Takayuki Sei on 2021/12/21.
 //
 
 #import <Foundation/Foundation.h>
+#import "Server.h"
 
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
-        // insert code here...
-        NSLog(@"Hello, World!");
+        Server *server = [[Server alloc] init];
+        [server run];
     }
     return 0;
 }
