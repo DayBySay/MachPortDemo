@@ -26,19 +26,25 @@
             NSLog(@"ポートが開けませんでした");
         }
         self.port.delegate = self;
+        NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
+        [runLoop addPort:self.port forMode:NSDefaultRunLoopMode];
     }
     return self;
 }
 
 - (void)run {
-    NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
-    [runLoop addPort:self.port forMode:NSDefaultRunLoopMode];
     NSLog(@"サーバー起動");
+    NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
     [runLoop run];
 }
 
 #pragma mark - NSPortDelegate
 - (void)handlePortMessage:(NSPortMessage *)message {
+    if ([_delegate respondsToSelector:@selector(server:receiveMessage:)]) {
+        [_delegate server:self receiveMessage:message];
+        return;
+    }
+    
     switch (message.msgid) {
         case MessageIDString: {
             NSString *string = [[NSString alloc] initWithData:message.components[0] encoding:NSUTF8StringEncoding];

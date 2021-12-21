@@ -9,7 +9,16 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class Server;
+
+@protocol ServerDelegate <NSObject>
+@optional
+- (void)server:(nonnull Server *)server receiveMessage:(nonnull NSPortMessage *)message;
+
+@end
+
 @interface Server : NSObject
+@property (nullable, weak) id <ServerDelegate> delegate;
 
 - (void)run;
 
