@@ -11,30 +11,19 @@ struct ContentView: View {
     @StateObject private var viewModel = ContentViewModel()
     var body: some View {
         VStack {
-            Text("Hello, world!")
+            TextEditor(text: $viewModel.receivedText)
                 .padding()
-            Text("Hello, world!")
-                .padding()
-        
-            Text("Hello, world!")
-                .padding()
-        }
-        .onAppear {
-                viewModel.onAppear()
         }
     }
 }
 
 class ContentViewModel: NSObject, ObservableObject {
+    @Published var receivedText: String = ""
     private let server: Server!
     override init() {
         server = Server()
         super.init()
         server.delegate = self
-    }
-    
-    func onAppear() {
-        server.run()
     }
 }
 
@@ -43,11 +32,12 @@ extension ContentViewModel: ServerDelegate {
         switch message.msgid {
         case 1:
             let string = String(data: message.components![0] as! Data, encoding: .utf8)!
+            receivedText = "receivedText: \(string)\n\(receivedText)"
             let responsString = "\(string) というメッセージを受信したよ"
             print(responsString)
             let response = PortMessage(send: message.sendPort,
                                        receive: nil,
-                                       components: [responsString.data(using: .utf8)])
+                                       components: [responsString.data(using: .utf8)!])
             response.msgid = message.msgid
             let timeout = Date(timeIntervalSinceNow: 1.0)
             response.send(before: timeout)
